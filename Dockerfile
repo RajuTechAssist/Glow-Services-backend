@@ -1,13 +1,14 @@
-# build stage
-From maven:3.9.11-eclipse-temurin-21 As build
+# build stage (Java 21)
+FROM maven:3.9.11-eclipse-temurin-21 AS build
 WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+COPY pom.xml .
+RUN mvn -B dependency:go-offline -DskipTests
+COPY src ./src
+RUN mvn -B -DskipTests package
 
-# runtime stage
-FROM eclipse-temurin:17-jre-jammy
-COPY --from=build /app/target/glow-services-backend-0.0.1-SNAPSHOT.jar app.jar
+# runtime stage (Java 21)
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=build /app/target/*.jar ./app.jar
 EXPOSE 8081
-ENTRYPOINT [ "java", "-jar", "app.jar" ]   
-
-
+ENTRYPOINT ["java","-jar","/app.jar"]

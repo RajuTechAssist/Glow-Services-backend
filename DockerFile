@@ -4,6 +4,6 @@ WORKDIR /app
 RUN mvn clean package -DskipTests
 
 From eclipse-temurin:21-jdk-alpine
-copy --from=build /app/target/glow-services-backend-0.0.1-SNAPSHOT.jar app.jar
+copy --from=build /target/glow-services-backend-0.0.1-SNAPSHOT.jar app.jar
 EXPOSE 8081
 ENTRYPOINT [ "java", "-jar", "app.jar" ]

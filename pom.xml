@@ -100,10 +100,10 @@
 
 <!-- Database -->
 <dependency>
-	<groupId>mysql</groupId>
-	<artifactId>mysql-connector-java</artifactId>
-	<version>8.0.33</version>
-	<scope>runtime</scope>
+<groupId>org.postgresql</groupId>
+<artifactId>postgresql</artifactId>
+<scope>runtime</scope>
+<version>42.6.0</version>
 </dependency>
 
 <!-- Redis for caching & sessions -->
@@ -204,12 +204,6 @@
     <version>1.19.0</version>
     <scope>test</scope>
 </dependency>
-<dependency>
-    <groupId>org.testcontainers</groupId>
-    <artifactId>mysql</artifactId>
-    <version>1.19.0</version>
-    <scope>test</scope>
-</dependency>
 
 <!-- MapStruct for mapping -->
 <dependency>
@@ -252,6 +246,7 @@
     <groupId>com.fasterxml.jackson.core</groupId>
     <artifactId>jackson-databind</artifactId>
 </dependency>
+
 
 
 	</dependencies>

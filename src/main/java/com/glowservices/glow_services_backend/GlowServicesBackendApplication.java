@@ -19,6 +19,7 @@ import java.util.Arrays;
 @SpringBootApplication
 public class GlowServicesBackendApplication implements org.springframework.boot.CommandLineRunner {
 
+
     @Autowired
     private AdminRepository adminRepository;
 
@@ -27,12 +28,34 @@ public class GlowServicesBackendApplication implements org.springframework.boot.
 
     public static void main(String[] args) {
 
-        Dotenv dotenv = Dotenv.configure().filename(".env").load();
-        System.setProperty("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
-        System.setProperty("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
-        System.setProperty("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+        // Load .env if present, but don't fail if it's missing (Render doesn't use a
+        // .env file)
+        try {
+            Dotenv dotenv = Dotenv.configure()
+                    .ignoreIfMissing() // <-- important: prevents exception when no .env
+                    .load();
+
+            // set System properties only if not already present as env vars or system props
+            setIfMissing("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
+            setIfMissing("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
+            setIfMissing("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+            // add any other keys you used from .env similarly
+        } catch (Exception ex) {
+            // ignore: if any error occurs, fall back to environment variables /
+            // application.properties
+        }
 
         SpringApplication.run(GlowServicesBackendApplication.class, args);
+    }
+
+    private static void setIfMissing(String key, String value) {
+        if (value == null || value.isBlank())
+            return;
+        // prefer real environment variables (Render), then existing system props, then
+        // set
+        if (System.getenv(key) == null && System.getProperty(key) == null) {
+            System.setProperty(key, value);
+        }
     }
 
     @Override

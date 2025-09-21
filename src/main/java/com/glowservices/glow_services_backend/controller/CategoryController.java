@@ -16,7 +16,7 @@ import java.util.Map;
 @RequestMapping("/api/admin/categories")
 @CrossOrigin(origins = {
     "http://localhost:5173", 
-    "https://glow-services-frontend.vercel.app"
+    "https://glow-services-frontend.vercel.app/"
 }, allowCredentials = "true")
 public class CategoryController {
 

@@ -21,7 +21,7 @@ public class ServiceAdminController {
     @GetMapping
     public ResponseEntity<List<ServiceEntity>> getAllServicesAdmin() {
         // This method can return all services, including inactive ones if needed
-        List<ServiceEntity> services = serviceService.getAllActiveServices();
+        List<ServiceEntity> services = serviceService.getAllServices();
         return ResponseEntity.ok(services);
     }
 

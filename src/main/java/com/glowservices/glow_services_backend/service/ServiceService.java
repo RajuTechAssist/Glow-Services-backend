@@ -24,6 +24,10 @@ public class ServiceService {
         return serviceRepository.findByCategoryAndActiveTrue(category);
     }
 
+    public List<ServiceEntity> getAllServices() {
+        return serviceRepository.findAll();
+    }
+
     // ✅ NEW: Method for admin to get all services (including inactive) with filter
     public List<ServiceEntity> getAllServicesAdmin(String category) {
         if (category == null || "all".equalsIgnoreCase(category)) {

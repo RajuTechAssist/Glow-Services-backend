@@ -21,6 +21,8 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> { 
     
     List<ServiceEntity> findByActiveTrue(); // Fixed: Return ServiceEntity
     
+       List<ServiceEntity> findByCategoryAndActiveTrue(String category);
+
     @Query("SELECT s FROM ServiceEntity s WHERE s.active = true AND " +
            "(LOWER(s.name) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
            "LOWER(s.description) LIKE LOWER(CONCAT('%', :searchTerm, '%')))")

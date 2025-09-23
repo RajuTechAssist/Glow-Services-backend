@@ -16,20 +16,25 @@ public class ServiceService {
     @Autowired
     private ServiceRepository serviceRepository;
 
-    public List<ServiceEntity> getAllActiveServices() {
-        return serviceRepository.findByActiveTrue();
-    } // Fixed: Added missing closing brace
+    // ✅ MODIFIED: Main method to get services with optional category filter
+    public List<ServiceEntity> getActiveServices(String category) {
+        if (category == null || "all".equalsIgnoreCase(category)) {
+            return serviceRepository.findByActiveTrue();
+        }
+        return serviceRepository.findByCategoryAndActiveTrue(category);
+    }
 
-    public Optional<ServiceEntity> getServiceBySlug(String slug) {
-        return serviceRepository.findBySlug(slug);
-    } // Fixed: Added missing closing brace
-
-    public List<ServiceEntity> getServicesByCategory(String category) {
-        if ("all".equals(category)) {
-            return getAllActiveServices();
+    // ✅ NEW: Method for admin to get all services (including inactive) with filter
+    public List<ServiceEntity> getAllServicesAdmin(String category) {
+        if (category == null || "all".equalsIgnoreCase(category)) {
+            return serviceRepository.findAll();
         }
         return serviceRepository.findByCategory(category);
-    } // Fixed: Added missing closing brace
+    }
+
+   public Optional<ServiceEntity> getServiceBySlug(String slug) {
+        return serviceRepository.findBySlug(slug);
+    }
 
     public List<ServiceEntity> getFeaturedServices() {
         return serviceRepository.findByPopularTrue();

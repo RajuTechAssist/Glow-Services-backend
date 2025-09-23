@@ -12,7 +12,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/services")
-// Remove @CrossOrigin since we're handling it globally now
 public class ServiceController {
     
     @Autowired
@@ -92,4 +91,5 @@ public class ServiceController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
 }

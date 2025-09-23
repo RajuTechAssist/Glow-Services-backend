@@ -45,6 +45,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/newsletter/**").permitAll()
                                                 .requestMatchers("/api/public/**").permitAll()
                                                 .requestMatchers("/api/health/**").permitAll()
+
+                                                .requestMatchers("/api/public/**").permitAll()
                                                 // Allow actuator health check
                                                 .requestMatchers("/actuator/health/**").permitAll()
                                                 // Require authentication for admin endpoints

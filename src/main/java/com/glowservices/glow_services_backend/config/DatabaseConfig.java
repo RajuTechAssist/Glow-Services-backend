@@ -21,6 +21,9 @@ public class DatabaseConfig {
     @Value("${spring.datasource.password}")
     private String password;
 
+    @Value("${spring.datasource.driver-class-name}")
+    private String driverClassName;
+
     @Bean
     @Primary
     public DataSource dataSource() {
@@ -30,7 +33,8 @@ public class DatabaseConfig {
         config.setJdbcUrl(jdbcUrl);
         config.setUsername(username);
         config.setPassword(password);
-        config.setDriverClassName("org.postgresql.Driver");
+        // config.setDriverClassName("org.postgresql.Driver");
+        config.setDriverClassName(driverClassName);
 
         // ✅ FIXED: Optimized Pool Configuration
         config.setMinimumIdle(5);

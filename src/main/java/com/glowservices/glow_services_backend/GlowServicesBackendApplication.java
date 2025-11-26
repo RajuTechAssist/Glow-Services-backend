@@ -35,6 +35,8 @@ public class GlowServicesBackendApplication implements org.springframework.boot.
             setIfMissing("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
             setIfMissing("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
             setIfMissing("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+
+            setIfMissing("spring.datasource.driver-class-name", dotenv.get("SPRING_DATASOURCE_DRIVER"));
             // add any other keys you used from .env similarly
         } catch (Exception ex) {
             // ignore: if any error occurs, fall back to environment variables /

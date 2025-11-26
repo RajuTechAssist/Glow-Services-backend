@@ -16,8 +16,8 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://glow-services-frontend.vercel.app/"));
-        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app"));
+        // corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         corsConfiguration.setExposedHeaders(List.of("Authorization", "Location"));
         corsConfiguration.setAllowCredentials(true); // only if you plan to use cookies/credentials

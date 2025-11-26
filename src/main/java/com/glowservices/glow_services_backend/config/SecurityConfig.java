@@ -77,7 +77,7 @@ public class SecurityConfig {
 
                 // Allow specific origins
                 configuration.setAllowedOriginPatterns(
-                                Arrays.asList("http://localhost:5173", "https://glow-services-frontend.vercel.app/"));
+                                Arrays.asList("http://localhost:5173", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app"));
                 configuration.setAllowedOriginPatterns(Arrays.asList("*"));
                 configuration.setAllowCredentials(true);
 

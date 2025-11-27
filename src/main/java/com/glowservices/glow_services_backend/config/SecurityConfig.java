@@ -35,6 +35,7 @@ public class SecurityConfig {
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
+                                .requestMatchers("/api/admin/ai/**").permitAll()
                                 .requestMatchers("/api/admin/**").authenticated()
                                                 // Allow public access to these endpoints
                                                 .requestMatchers("/api/services/**").permitAll()

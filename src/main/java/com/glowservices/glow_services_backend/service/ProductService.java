@@ -35,7 +35,7 @@ public class ProductService {
 
     // Get products with filtering and sorting
     public List<ProductResponse> getProducts(String category, String search, String sortBy) {
-        log.info("Fetching products with filters - category: {}, search: {}, sortBy: {}", 
+        log.info("Fetching products with filters - category: {}, search: {}, sortBy: {}",
                 category, search, sortBy);
 
         List<Product> products;
@@ -194,8 +194,10 @@ public class ProductService {
                         case "newest":
                             return p2.getCreatedAt().compareTo(p1.getCreatedAt());
                         case "popular":
-                            if (p1.getPopular() && !p2.getPopular()) return -1;
-                            if (!p1.getPopular() && p2.getPopular()) return 1;
+                            if (p1.getPopular() && !p2.getPopular())
+                                return -1;
+                            if (!p1.getPopular() && p2.getPopular())
+                                return 1;
                             return p2.getReviewCount().compareTo(p1.getReviewCount());
                         case "name":
                             return p1.getName().compareTo(p2.getName());
@@ -218,5 +220,63 @@ public class ProductService {
         ProductResponse response = new ProductResponse();
         BeanUtils.copyProperties(product, response);
         return response;
+    }
+
+    // --- ADMIN METHODS ---
+
+    // Get ALL products (Active & Inactive) for Admin
+    public List<ProductResponse> getAllProductsForAdmin() {
+        log.info("Fetching all products for admin");
+        return productRepository.findAll().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    // Get product by ID (for Admin editing)
+    public Optional<ProductResponse> getProductById(Long id) {
+        log.info("Fetching product by ID: {}", id);
+        return productRepository.findById(id)
+                .map(this::convertToResponse);
+    }
+
+    // Update product by ID
+    @Transactional
+    public Optional<ProductResponse> updateProductById(Long id, ProductRequest request) {
+        log.info("Updating product ID: {}", id);
+
+        return productRepository.findById(id)
+                .map(existingProduct -> {
+                    BeanUtils.copyProperties(request, existingProduct, "id", "slug", "createdAt");
+
+                    // Regenerate slug if name changed
+                    if (!existingProduct.getName().equals(request.getName())) {
+                        existingProduct.setSlug(generateSlug(request.getName()));
+                    }
+
+                    Product savedProduct = productRepository.save(existingProduct);
+                    return convertToResponse(savedProduct);
+                });
+    }
+
+    // Delete product by ID
+    @Transactional
+    public boolean deleteProductById(Long id) {
+        log.info("Deleting product ID: {}", id);
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
+    // Toggle Active Status
+    @Transactional
+    public Optional<ProductResponse> toggleProductStatus(Long id) {
+        return productRepository.findById(id)
+                .map(product -> {
+                    product.setActive(!product.getActive());
+                    Product saved = productRepository.save(product);
+                    return convertToResponse(saved);
+                });
     }
 }

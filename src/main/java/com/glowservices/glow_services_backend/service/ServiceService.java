@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ public class ServiceService {
 
     @Autowired
     private ServiceRepository serviceRepository;
-    
+
     @Autowired
     private CategoryRepository categoryRepository;
 
@@ -87,36 +88,50 @@ public class ServiceService {
         if (service.getName() == null || service.getName().trim().isEmpty()) {
             throw new RuntimeException("Service name is required");
         }
-        
+
         if (service.getCategory() == null || service.getCategory().trim().isEmpty()) {
             throw new RuntimeException("Service category is required");
         }
-        
+
         if (service.getPrice() == null || service.getPrice() <= 0) {
             throw new RuntimeException("Service price must be greater than 0");
         }
-        
+
         if (service.getDuration() == null || service.getDuration().trim().isEmpty()) {
             throw new RuntimeException("Service duration is required");
         }
 
         // Validate category exists
         validateCategory(service.getCategory());
-        
+
+        // Initialize lists if null
+        if (service.getFeatures() == null) {
+            service.setFeatures(new ArrayList<>());
+        }
+        if (service.getBenefits() == null) {
+            service.setBenefits(new ArrayList<>());
+        }
+        if (service.getServices() == null) {
+            service.setServices(new ArrayList<>());
+        }
+        if (service.getGallery() == null) {
+            service.setGallery(new ArrayList<>());
+        }
+
         // Generate slug if not provided
         if (service.getSlug() == null || service.getSlug().trim().isEmpty()) {
             service.setSlug(generateSlug(service.getName()));
         }
-        
+
         // Check for duplicate slug
         if (serviceRepository.findBySlug(service.getSlug()).isPresent()) {
             throw new RuntimeException("Service with slug '" + service.getSlug() + "' already exists");
         }
-        
-        // Set timestamps (will also be set by @PrePersist)
+
+        // Set timestamps
         service.setCreatedAt(LocalDateTime.now());
         service.setUpdatedAt(LocalDateTime.now());
-        
+
         // Set default values
         if (service.getActive() == null) {
             service.setActive(true);
@@ -130,12 +145,12 @@ public class ServiceService {
         if (service.getReviews() == null) {
             service.setReviews(0);
         }
-        
+
         // Calculate savings
         if (service.getOriginalPrice() != null && service.getOriginalPrice() > service.getPrice()) {
             service.setSavings(service.getOriginalPrice() - service.getPrice());
         }
-        
+
         return serviceRepository.save(service);
     }
 
@@ -143,11 +158,11 @@ public class ServiceService {
         return serviceRepository.findById(id)
                 .map(service -> {
                     // Validate category if changed
-                    if (serviceDetails.getCategory() != null && 
-                        !serviceDetails.getCategory().equals(service.getCategory())) {
+                    if (serviceDetails.getCategory() != null &&
+                            !serviceDetails.getCategory().equals(service.getCategory())) {
                         validateCategory(serviceDetails.getCategory());
                     }
-                    
+
                     // Update fields
                     if (serviceDetails.getName() != null) {
                         service.setName(serviceDetails.getName());
@@ -197,12 +212,12 @@ public class ServiceService {
                     if (serviceDetails.getActive() != null) {
                         service.setActive(serviceDetails.getActive());
                     }
-                    
+
                     // Recalculate savings
                     if (service.getOriginalPrice() != null && service.getPrice() != null) {
                         service.setSavings(service.getOriginalPrice() - service.getPrice());
                     }
-                    
+
                     service.setUpdatedAt(LocalDateTime.now());
                     return serviceRepository.save(service);
                 });
@@ -229,20 +244,20 @@ public class ServiceService {
                 })
                 .orElse(false);
     }
-    
+
     // Helper method to validate category exists
     private void validateCategory(String categorySlug) {
         categoryRepository.findBySlug(categorySlug)
-            .orElseThrow(() -> new RuntimeException("Category with slug '" + categorySlug + "' does not exist"));
+                .orElseThrow(() -> new RuntimeException("Category with slug '" + categorySlug + "' does not exist"));
     }
-    
+
     // Helper method to generate slug
     private String generateSlug(String name) {
         return name.toLowerCase()
-                  .trim()
-                  .replaceAll("[^a-z0-9\\s-]", "")
-                  .replaceAll("\\s+", "-")
-                  .replaceAll("-+", "-")
-                  .replaceAll("^-|-$", "");
+                .trim()
+                .replaceAll("[^a-z0-9\\s-]", "")
+                .replaceAll("\\s+", "-")
+                .replaceAll("-+", "-")
+                .replaceAll("^-|-$", "");
     }
 }

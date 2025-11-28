@@ -2,21 +2,26 @@ package com.glowservices.glow_services_backend.service;
 
 import com.glowservices.glow_services_backend.model.entity.ServiceEntity;
 import com.glowservices.glow_services_backend.repository.ServiceRepository;
+import com.glowservices.glow_services_backend.repository.CategoryRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class ServiceService {
 
     @Autowired
     private ServiceRepository serviceRepository;
+    
+    @Autowired
+    private CategoryRepository categoryRepository;
 
-    // ✅ MODIFIED: Main method to get services with optional category filter
     public List<ServiceEntity> getActiveServices(String category) {
         if (category == null || "all".equalsIgnoreCase(category)) {
             return serviceRepository.findByActiveTrue();
@@ -28,7 +33,6 @@ public class ServiceService {
         return serviceRepository.findAll();
     }
 
-    // ✅ NEW: Method for admin to get all services (including inactive) with filter
     public List<ServiceEntity> getAllServicesAdmin(String category) {
         if (category == null || "all".equalsIgnoreCase(category)) {
             return serviceRepository.findAll();
@@ -36,13 +40,13 @@ public class ServiceService {
         return serviceRepository.findByCategory(category);
     }
 
-   public Optional<ServiceEntity> getServiceBySlug(String slug) {
+    public Optional<ServiceEntity> getServiceBySlug(String slug) {
         return serviceRepository.findBySlug(slug);
     }
 
     public List<ServiceEntity> getFeaturedServices() {
         return serviceRepository.findByPopularTrue();
-    } // Fixed: Added missing closing brace
+    }
 
     public List<ServiceEntity> searchServices(String searchTerm, String category, String sortBy) {
         List<ServiceEntity> services;
@@ -53,9 +57,8 @@ public class ServiceService {
             services = serviceRepository.findByCategoryAndSearchTerm(category, searchTerm);
         }
 
-        // Apply sorting
         return sortServices(services, sortBy);
-    } // Fixed: Added missing closing brace
+    }
 
     private List<ServiceEntity> sortServices(List<ServiceEntity> services, String sortBy) {
         switch (sortBy) {
@@ -77,53 +80,169 @@ public class ServiceService {
                         .sorted((s1, s2) -> Boolean.compare(s2.getPopular(), s1.getPopular()))
                         .toList();
         }
-    } // Fixed: Added missing closing brace
+    }
 
     public ServiceEntity createService(ServiceEntity service) {
+        // Validate required fields
+        if (service.getName() == null || service.getName().trim().isEmpty()) {
+            throw new RuntimeException("Service name is required");
+        }
+        
+        if (service.getCategory() == null || service.getCategory().trim().isEmpty()) {
+            throw new RuntimeException("Service category is required");
+        }
+        
+        if (service.getPrice() == null || service.getPrice() <= 0) {
+            throw new RuntimeException("Service price must be greater than 0");
+        }
+        
+        if (service.getDuration() == null || service.getDuration().trim().isEmpty()) {
+            throw new RuntimeException("Service duration is required");
+        }
+
+        // Validate category exists
+        validateCategory(service.getCategory());
+        
+        // Generate slug if not provided
+        if (service.getSlug() == null || service.getSlug().trim().isEmpty()) {
+            service.setSlug(generateSlug(service.getName()));
+        }
+        
+        // Check for duplicate slug
+        if (serviceRepository.findBySlug(service.getSlug()).isPresent()) {
+            throw new RuntimeException("Service with slug '" + service.getSlug() + "' already exists");
+        }
+        
+        // Set timestamps (will also be set by @PrePersist)
         service.setCreatedAt(LocalDateTime.now());
         service.setUpdatedAt(LocalDateTime.now());
+        
+        // Set default values
+        if (service.getActive() == null) {
+            service.setActive(true);
+        }
+        if (service.getPopular() == null) {
+            service.setPopular(false);
+        }
+        if (service.getRating() == null) {
+            service.setRating(5.0);
+        }
+        if (service.getReviews() == null) {
+            service.setReviews(0);
+        }
+        
+        // Calculate savings
+        if (service.getOriginalPrice() != null && service.getOriginalPrice() > service.getPrice()) {
+            service.setSavings(service.getOriginalPrice() - service.getPrice());
+        }
+        
         return serviceRepository.save(service);
-    } // Fixed: Added missing closing brace
+    }
 
     public Optional<ServiceEntity> updateService(Long id, ServiceEntity serviceDetails) {
         return serviceRepository.findById(id)
                 .map(service -> {
-                    service.setName(serviceDetails.getName());
-                    service.setSlug(serviceDetails.getSlug());
-                    service.setCategory(serviceDetails.getCategory());
-                    service.setPrice(serviceDetails.getPrice());
-                    service.setOriginalPrice(serviceDetails.getOriginalPrice());
-                    service.setDescription(serviceDetails.getDescription());
-                    service.setLongDescription(serviceDetails.getLongDescription());
-                    service.setFeatures(serviceDetails.getFeatures());
-                    service.setBenefits(serviceDetails.getBenefits());
-                    service.setServices(serviceDetails.getServices());
-                    service.setPopular(serviceDetails.getPopular());
-                    service.setActive(serviceDetails.getActive());
+                    // Validate category if changed
+                    if (serviceDetails.getCategory() != null && 
+                        !serviceDetails.getCategory().equals(service.getCategory())) {
+                        validateCategory(serviceDetails.getCategory());
+                    }
+                    
+                    // Update fields
+                    if (serviceDetails.getName() != null) {
+                        service.setName(serviceDetails.getName());
+                    }
+                    if (serviceDetails.getSlug() != null) {
+                        service.setSlug(serviceDetails.getSlug());
+                    }
+                    if (serviceDetails.getCategory() != null) {
+                        service.setCategory(serviceDetails.getCategory());
+                    }
+                    if (serviceDetails.getPrice() != null) {
+                        service.setPrice(serviceDetails.getPrice());
+                    }
+                    if (serviceDetails.getOriginalPrice() != null) {
+                        service.setOriginalPrice(serviceDetails.getOriginalPrice());
+                    }
+                    if (serviceDetails.getDuration() != null) {
+                        service.setDuration(serviceDetails.getDuration());
+                    }
+                    if (serviceDetails.getDescription() != null) {
+                        service.setDescription(serviceDetails.getDescription());
+                    }
+                    if (serviceDetails.getLongDescription() != null) {
+                        service.setLongDescription(serviceDetails.getLongDescription());
+                    }
+                    if (serviceDetails.getFeatures() != null) {
+                        service.setFeatures(serviceDetails.getFeatures());
+                    }
+                    if (serviceDetails.getBenefits() != null) {
+                        service.setBenefits(serviceDetails.getBenefits());
+                    }
+                    if (serviceDetails.getServices() != null) {
+                        service.setServices(serviceDetails.getServices());
+                    }
+                    if (serviceDetails.getImage() != null) {
+                        service.setImage(serviceDetails.getImage());
+                    }
+                    if (serviceDetails.getGallery() != null) {
+                        service.setGallery(serviceDetails.getGallery());
+                    }
+                    if (serviceDetails.getGradient() != null) {
+                        service.setGradient(serviceDetails.getGradient());
+                    }
+                    if (serviceDetails.getPopular() != null) {
+                        service.setPopular(serviceDetails.getPopular());
+                    }
+                    if (serviceDetails.getActive() != null) {
+                        service.setActive(serviceDetails.getActive());
+                    }
+                    
+                    // Recalculate savings
+                    if (service.getOriginalPrice() != null && service.getPrice() != null) {
+                        service.setSavings(service.getOriginalPrice() - service.getPrice());
+                    }
+                    
                     service.setUpdatedAt(LocalDateTime.now());
                     return serviceRepository.save(service);
                 });
-    } // Fixed: Added missing closing brace
+    }
 
     public boolean deleteService(Long id) {
         return serviceRepository.findById(id)
                 .map(service -> {
                     service.setActive(false); // Soft delete
+                    service.setUpdatedAt(LocalDateTime.now());
                     serviceRepository.save(service);
-                    return true;
-                })
-                .orElse(false);
-    } // Fixed: Added missing closing brace
-
-    // Add this new method inside your ServiceService.java class
-
-    public boolean deleteServiceBySlug(String slug) {
-        return serviceRepository.findBySlug(slug)
-                .map(service -> {
-                    serviceRepository.delete(service); // Or use soft delete: service.setActive(false);
                     return true;
                 })
                 .orElse(false);
     }
 
-} // Fixed: Added final closing brace
+    public boolean deleteServiceBySlug(String slug) {
+        return serviceRepository.findBySlug(slug)
+                .map(service -> {
+                    service.setActive(false); // Soft delete
+                    service.setUpdatedAt(LocalDateTime.now());
+                    serviceRepository.save(service);
+                    return true;
+                })
+                .orElse(false);
+    }
+    
+    // Helper method to validate category exists
+    private void validateCategory(String categorySlug) {
+        categoryRepository.findBySlug(categorySlug)
+            .orElseThrow(() -> new RuntimeException("Category with slug '" + categorySlug + "' does not exist"));
+    }
+    
+    // Helper method to generate slug
+    private String generateSlug(String name) {
+        return name.toLowerCase()
+                  .trim()
+                  .replaceAll("[^a-z0-9\\s-]", "")
+                  .replaceAll("\\s+", "-")
+                  .replaceAll("-+", "-")
+                  .replaceAll("^-|-$", "");
+    }
+}

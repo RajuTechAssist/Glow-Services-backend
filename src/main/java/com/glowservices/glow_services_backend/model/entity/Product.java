@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.AllArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -59,11 +60,15 @@ public class Product {
     @Column(length = 50)
     private String color;
 
-    @Column(columnDefinition = "TEXT")
-    private String ingredients;
+    @ElementCollection
+    @CollectionTable(name = "product_ingredients", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "ingredient")
+    private List<String> ingredients = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String howToUse;
+    @ElementCollection
+    @CollectionTable(name = "product_how_to_use", joinColumns = @JoinColumn(name = "product_id"))
+    @Column(name = "step")
+    private List<String> howToUse = new ArrayList<>();
 
     @Column(precision = 3, scale = 2)
     private BigDecimal rating = BigDecimal.ZERO;

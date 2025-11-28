@@ -21,10 +21,6 @@ import com.glowservices.glow_services_backend.repository.AdminRepository;
 
 @RestController
 @RequestMapping("/api/admin")
-@CrossOrigin(origins = {
-        "http://localhost:5173",
-        "https://glow-services-frontend.vercel.app"
-}, allowCredentials = "true")
 public class AdminAuthController {
 
     @Autowired

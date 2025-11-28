@@ -11,7 +11,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addCorsMappings(CorsRegistry registry) {
         registry
           .addMapping("/api/**")
-          .allowedOrigins("http://localhost:5173", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app")
+          .allowedOrigins("http://localhost:5173",  "https://glow-service.studio", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app", "http://localhost:3000")
           .allowedMethods("GET", "POST", "PUT", "DELETE")
           .allowCredentials(true);
     }

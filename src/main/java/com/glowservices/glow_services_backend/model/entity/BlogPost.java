@@ -36,6 +36,9 @@ public class BlogPost {
     @Column(nullable = false, length = 200)
     private String title;
 
+    @Column(unique = true, length = 250)
+    private String slug;
+
     @Column(columnDefinition = "TEXT")
     private String excerpt;
 
@@ -85,4 +88,3 @@ public class BlogPost {
 
     
 }
-

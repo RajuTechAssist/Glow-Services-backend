@@ -10,9 +10,17 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry
-          .addMapping("/api/**")
-          .allowedOrigins("http://localhost:5173",  "https://glow-service.studio", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app", "http://localhost:3000")
-          .allowedMethods("GET", "POST", "PUT", "DELETE")
-          .allowCredentials(true);
+          .addMapping("/**")  // Apply to ALL endpoints
+          .allowedOrigins(
+              "http://localhost:5173",
+              "http://localhost:3000",
+              "https://glow-service.studio",
+              "https://www.glow-service.studio",
+              "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app"
+          )
+          .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
+          .allowedHeaders("*")
+          .allowCredentials(true)
+          .maxAge(3600);  // Cache preflight for 1 hour
     }
 }

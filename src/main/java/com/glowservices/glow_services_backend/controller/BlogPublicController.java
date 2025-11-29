@@ -27,7 +27,7 @@ public class BlogPublicController {
     @GetMapping
     public ResponseEntity<List<BlogPost>> getAllPublishedBlogs() {
         try {
-            List<BlogPost> blogs = blogPostService.getPublishedBlogs();
+            List blogs = blogPostService.getPublishedBlogs();
             return ResponseEntity.ok(blogs);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

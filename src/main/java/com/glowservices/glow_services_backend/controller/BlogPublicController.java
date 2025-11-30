@@ -13,8 +13,9 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/blogs")
-// @CrossOrigin(origins = { "http://localhost:5173", "https://glow-service.studio",
-//         "https://www.glow-service.studio" }, allowCredentials = "true")
+// @CrossOrigin(origins = { "http://localhost:5173",
+// "https://glow-service.studio",
+// "https://www.glow-service.studio" }, allowCredentials = "true")
 public class BlogPublicController {
 
     @Autowired
@@ -44,10 +45,10 @@ public class BlogPublicController {
     /**
      * Get all published blogs
      */
-    @GetMapping
-    public ResponseEntity<List<BlogPost>> getAllPublishedBlogs() {
+    @GetMapping("/published")
+    public ResponseEntity<List<BlogPost>> getPublishedBlogs() {
         try {
-            List blogs = blogPostService.getPublishedBlogs();
+            List<BlogPost> blogs = blogPostService.getPublishedBlogs();
             return ResponseEntity.ok(blogs);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();

@@ -18,7 +18,7 @@ import com.glowservices.glow_services_backend.repository.CustomerRepository;
 
 @RestController
 @RequestMapping("/api/customers")
-@CrossOrigin(origins="http://localhost:5173", allowCredentials="true")
+// @CrossOrigin(origins="http://localhost:5173", allowCredentials="true")
 public class CustomerAuthController {
 
     @Autowired private CustomerRepository customerRepo;

@@ -13,14 +13,34 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/blogs")
-@CrossOrigin(origins = {"http://localhost:5173", "https://glow-service.studio", "https://www.glow-service.studio"}, allowCredentials = "true")
+// @CrossOrigin(origins = { "http://localhost:5173", "https://glow-service.studio",
+//         "https://www.glow-service.studio" }, allowCredentials = "true")
 public class BlogPublicController {
 
     @Autowired
     private BlogPostService blogPostService;
 
     // ===================== PUBLIC READ ENDPOINTS =====================
-    
+
+    @GetMapping("/debug")
+    public ResponseEntity<?> debugBlogs() {
+        try {
+            List<BlogPost> allBlogs = blogPostService.getAllBlogs();
+            Map<String, Object> debug = new HashMap<>();
+            debug.put("total", allBlogs.size());
+            debug.put("blogs", allBlogs.stream().map(b -> {
+                Map<String, Object> m = new HashMap<>();
+                m.put("id", b.getId());
+                m.put("title", b.getTitle());
+                m.put("status", b.getStatus()); // Check actual status value
+                return m;
+            }).toList());
+            return ResponseEntity.ok(debug);
+        } catch (Exception e) {
+            return ResponseEntity.ok("Error: " + e.getMessage());
+        }
+    }
+
     /**
      * Get all published blogs
      */

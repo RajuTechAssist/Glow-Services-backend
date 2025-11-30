@@ -19,27 +19,27 @@ public class ServiceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
     @Column(unique = true, nullable = false)
     private String slug;
 
-    @Column(nullable = false)
+    @Column(name = "category", nullable = false)
     private String category; // Category slug reference
 
-    @Column(nullable = false)
+    @Column(name = "price", nullable = false)
     private Double price;
 
     private Double originalPrice;
 
-    @Column(nullable = false)
+    @Column(name = "duration", nullable = false)
     private String duration;
 
     private Double rating = 5.0;
     private Integer reviews = 0;
 
-    @Column(length = 500)
+    @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
     @Column(length = 1500)
@@ -61,6 +61,7 @@ public class ServiceEntity {
     private List<String> services;
 
     private String image;
+    
 
     @ElementCollection
     @CollectionTable(name = "service_gallery", joinColumns = @JoinColumn(name = "service_id"))

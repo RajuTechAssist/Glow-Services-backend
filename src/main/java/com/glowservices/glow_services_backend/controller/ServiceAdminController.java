@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/admin/services")
-@CrossOrigin(origins = {"http://localhost:5173", "https://glow-services-frontend.vercel.app/"}, allowCredentials = "true")
+// @CrossOrigin(origins = {"http://localhost:5173", "https://glow-services-frontend.vercel.app/"}, allowCredentials = "true")
 public class ServiceAdminController {
 
     @Autowired

@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/public")
-@CrossOrigin(origins = {"http://localhost:5173", "https://glow-services-frontend.vercel.app/"}, allowCredentials = "true")
+// @CrossOrigin(origins = {"http://localhost:5173", "https://glow-services-frontend.vercel.app/"}, allowCredentials = "true")
 public class PublicController {
 
     @Autowired

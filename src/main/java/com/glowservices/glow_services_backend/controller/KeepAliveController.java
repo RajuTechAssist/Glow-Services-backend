@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "https://glow-services-frontend.vercel.app/") 
+// @CrossOrigin(origins = "https://glow-services-frontend.vercel.app/") 
 public class KeepAliveController {
 
     @GetMapping("/keep-alive")

@@ -75,3 +75,65 @@
 //         return source;
 //     }
 // }
+
+
+package com.glowservices.glow_services_backend.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import java.util.Arrays;
+
+@Configuration
+public class CorsConfig {
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        
+        // ✅ SET ALLOWED ORIGINS - INCLUDE ALL YOUR FRONTEND URLS
+        configuration.setAllowedOrigins(Arrays.asList(
+            "http://localhost:5173",
+            "http://localhost:3000",
+            "https://glow-service.studio",
+            "https://www.glow-service.studio",
+            "https://glow-services-frontend-git-main-rajutechassists-projects.vercel.app/"  // ✅ CRITICAL: Add your Vercel frontend
+        ));
+        
+        // ✅ SET ALLOWED METHODS
+        configuration.setAllowedMethods(Arrays.asList(
+            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
+        ));
+        
+        // ✅ SET ALLOWED HEADERS
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Content-Type", 
+            "Authorization", 
+            "X-Requested-With", 
+            "Accept",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"
+        ));
+        
+        // ✅ EXPOSE HEADERS FOR FRONTEND
+        configuration.setExposedHeaders(Arrays.asList(
+            "Authorization", 
+            "Location",
+            "Content-Disposition"
+        ));
+        
+        // ✅ ALLOW CREDENTIALS
+        configuration.setAllowCredentials(true);
+        
+        // ✅ MAX AGE FOR PREFLIGHT CACHE
+        configuration.setMaxAge(3600L);
+        
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        
+        return source;
+    }
+}

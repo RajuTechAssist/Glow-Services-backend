@@ -15,6 +15,7 @@ public class WebConfig implements WebMvcConfigurer {
                 "http://localhost:5173",
                 "http://localhost:3000",
                 "https://glow-service.studio",
+                "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app",
                 "https://www.glow-service.studio"
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")

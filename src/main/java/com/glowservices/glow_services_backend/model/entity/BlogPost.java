@@ -42,7 +42,7 @@ public class BlogPost {
     @Column(columnDefinition = "TEXT")
     private String excerpt;
 
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)

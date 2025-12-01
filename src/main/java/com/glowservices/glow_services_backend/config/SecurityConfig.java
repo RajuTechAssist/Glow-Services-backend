@@ -79,43 +79,5 @@ public class SecurityConfig {
                 return new BCryptPasswordEncoder();
         }
 
-        @Bean
-        public CorsConfigurationSource corsConfigurationSource() {
-                CorsConfiguration configuration = new CorsConfiguration();
-
-                // Allow specific origins
-                configuration.setAllowedOriginPatterns(
-                                Arrays.asList("http://localhost:5173", "https://glow-service.studio",
-                                                "https://www.glow-service.studio"));
-                configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-                configuration.setAllowCredentials(true);
-
-                // Allow common headers
-                configuration.setAllowedHeaders(Arrays.asList(
-                                "Origin",
-                                "Content-Type",
-                                "Accept",
-                                "Authorization",
-                                "X-Requested-With",
-                                "Access-Control-Request-Method",
-                                "Access-Control-Request-Headers"));
-
-                // Allow common methods
-                configuration.setAllowedMethods(Arrays.asList(
-                                "GET",
-                                "POST",
-                                "PUT",
-                                "DELETE",
-                                "OPTIONS"));
-
-                // Expose headers
-                configuration.setExposedHeaders(Arrays.asList(
-                                "Authorization",
-                                "Location"));
-
-                UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-                source.registerCorsConfiguration("/**", configuration);
-
-                return source;
-        }
+        
 }

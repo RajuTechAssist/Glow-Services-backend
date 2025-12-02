@@ -1,82 +1,3 @@
-// package com.glowservices.glow_services_backend.config;
-
-// import java.util.Arrays;
-// import java.util.List;
-
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.web.cors.CorsConfiguration;
-// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-// import org.springframework.web.filter.CorsFilter;
-
-// @Configuration
-// public class CorsConfig {
-    
-//     @Bean
-//     public CorsFilter corsFilter() {
-//         CorsConfiguration corsConfiguration = new CorsConfiguration();
-//         corsConfiguration.setAllowCredentials(true);
-//         corsConfiguration.setAllowedOriginPatterns(Arrays.asList("http://localhost:5173", "https://glow-services-frontend-15jfz525u-rajutechassists-projects.vercel.app", "https://glow-service.studio",
-//             "https://www.glow-service.studio"));
-//         // corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
-//         corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-//         corsConfiguration.setExposedHeaders(List.of("Authorization", "Location"));
-//         corsConfiguration.setAllowCredentials(true); // only if you plan to use cookies/credentials
-
-//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//         source.registerCorsConfiguration("/**", corsConfiguration);
-//         return new CorsFilter(source);
-//     }
-// }
-
-
-// package com.glowservices.glow_services_backend.config;
-
-// import org.springframework.boot.context.properties.ConfigurationProperties;
-// import org.springframework.context.annotation.Bean;
-// import org.springframework.context.annotation.Configuration;
-// import org.springframework.web.cors.CorsConfiguration;
-// import org.springframework.web.cors.CorsConfigurationSource;
-// import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-// import java.util.Arrays;
-
-// @Configuration
-// public class CorsConfig {
-
-//     @Bean
-//     public CorsConfigurationSource corsConfigurationSource() {
-//         CorsConfiguration configuration = new CorsConfiguration();
-        
-//         // Set allowed origins
-//         configuration.setAllowedOrigins(Arrays.asList(
-//             "http://localhost:5173",
-//             "http://localhost:3000",
-//             "https://glow-service.studio",
-//             "https://www.glow-service.studio"
-//         ));
-        
-//         // Set allowed methods
-//         configuration.setAllowedMethods(Arrays.asList(
-//             "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
-//         ));
-        
-//         // Set allowed headers
-//         configuration.setAllowedHeaders(Arrays.asList(
-//             "Content-Type", "Authorization", "X-Requested-With", "Accept"
-//         ));
-        
-//         // Allow credentials
-//         configuration.setAllowCredentials(true);
-        
-//         // Max age
-//         configuration.setMaxAge(3600L);
-        
-//         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//         source.registerCorsConfiguration("/**", configuration);
-//         return source;
-//     }
-// }
-
 package com.glowservices.glow_services_backend.config;
 
 import org.springframework.context.annotation.Bean;
@@ -85,6 +6,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 public class CorsConfig {
@@ -93,44 +15,19 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // ✅ SET ALLOWED ORIGINS - INCLUDE ALL YOUR FRONTEND URLS
-        configuration.setAllowedOrigins(Arrays.asList(
+        // Use patterns to allow Vercel preview deployments (e.g., frontend-git-main...)
+        configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:5173",
             "http://localhost:3000",
             "https://glow-service.studio",
             "https://www.glow-service.studio",
-            "https://glow-services-frontend.vercel.app",
-            "https://glow-services-frontend-git-main-rajutechassists-projects.vercel.app",
-            "https://glow-services-frontend-*.vercel.app"  // Catch all Vercel deployments
+            "https://glow-services-frontend*.vercel.app" // Wildcard for vercel
         ));
         
-        // ✅ SET ALLOWED METHODS
-        configuration.setAllowedMethods(Arrays.asList(
-            "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"
-        ));
-        
-        // ✅ SET ALLOWED HEADERS
-        configuration.setAllowedHeaders(Arrays.asList(
-            "Content-Type", 
-            "Authorization", 
-            "X-Requested-With", 
-            "Accept",
-            "Origin",
-            "Access-Control-Request-Method",
-            "Access-Control-Request-Headers"
-        ));
-        
-        // ✅ EXPOSE HEADERS FOR FRONTEND
-        configuration.setExposedHeaders(Arrays.asList(
-            "Authorization", 
-            "Location",
-            "Content-Disposition"
-        ));
-        
-        // ✅ ALLOW CREDENTIALS
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
-        
-        // ✅ MAX AGE FOR PREFLIGHT CACHE
         configuration.setMaxAge(3600L);
         
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

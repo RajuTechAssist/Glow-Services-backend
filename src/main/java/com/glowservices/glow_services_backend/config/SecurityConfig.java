@@ -27,18 +27,26 @@ public class SecurityConfig {
         @Autowired
         private JwtTokenProvider tokenProvider;
 
+        @Autowired
+    private CorsConfigurationSource corsConfigurationSource; // Inject the Bean from CorsConfig
+
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
                 http
-                                .cors(cors -> cors.disable())
+                                // 1. ENABLE CORS in Security and use our custom source
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                                 .csrf(csrf -> csrf.disable())
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
+                                        // 2. CRITICAL: Allow all OPTIONS (Preflight) requests globally
+                                                .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                                                
+                                                // Public Endpoints
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
                                                 .requestMatchers("/api/admin/ai/**").permitAll()
                                                 .requestMatchers("/api/admin/**").authenticated()
-                                                // Allow public access to these endpoints
+                                          
                                                 .requestMatchers("/api/services/**").permitAll()
                                                 .requestMatchers("/api/products/**").permitAll()
                                                 .requestMatchers("/api/categories/**").permitAll()

@@ -223,15 +223,13 @@ public class ServiceService {
                 });
     }
 
+    // ✅ NEW: Actually deletes the record from the database
     public boolean deleteService(Long id) {
-        return serviceRepository.findById(id)
-                .map(service -> {
-                    service.setActive(false); // Soft delete
-                    service.setUpdatedAt(LocalDateTime.now());
-                    serviceRepository.save(service);
-                    return true;
-                })
-                .orElse(false);
+        if (serviceRepository.existsById(id)) {
+            serviceRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public boolean deleteServiceBySlug(String slug) {

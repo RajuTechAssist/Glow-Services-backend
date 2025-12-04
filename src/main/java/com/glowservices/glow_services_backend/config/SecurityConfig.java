@@ -46,7 +46,7 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
                                                 .requestMatchers("/api/admin/ai/**").permitAll()
                                                 .requestMatchers("/api/admin/**").authenticated()
-                                          
+
                                                 .requestMatchers("/api/services/**").permitAll()
                                                 .requestMatchers("/api/products/**").permitAll()
                                                 .requestMatchers("/api/categories/**").permitAll()
@@ -54,7 +54,8 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/contact/**").permitAll()
                                                 .requestMatchers("/api/newsletter/**").permitAll()
                                                 .requestMatchers("/api/public/**").permitAll()
-                                                .requestMatchers("/api/health/**").permitAll()
+                                                 .requestMatchers("/api/health/**").permitAll()
+                                                 .requestMatchers("/api/blogs/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/admin/blogs/published")
                                                 .permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/admin/blogs/{id}").permitAll()

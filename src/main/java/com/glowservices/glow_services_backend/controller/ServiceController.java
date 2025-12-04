@@ -17,27 +17,35 @@ public class ServiceController {
     @Autowired
     private ServiceService serviceService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServiceEntity>> getAllServices(
             @RequestParam(required = false, defaultValue = "all") String category,
             @RequestParam(required = false) String search,
             @RequestParam(required = false, defaultValue = "popular") String sortBy) {
 
         try {
-            System.out.println("API called: category=" + category + ", search=" + search + ", sortBy=" + sortBy);
+            List<ServiceEntity> services;
 
-            if (search != null && !search.isEmpty()) {
-                // ✅ USES a simpler, more direct service call now
-                List<ServiceEntity> services = serviceService.getActiveServices(category);
-                System.out.println("Found " + services.size() + " services for search");
-                return ResponseEntity.ok(services);
+            // ✅ FIX: If search is present, use searchServices method
+            if (search != null && !search.trim().isEmpty()) {
+                services = serviceService.searchServices(search.trim(), category, sortBy);
+                System.out.println("🔍 Searching for: " + search + " | Found: " + services.size());
+            } 
+            // ✅ FIX: If no search, but category is specific, filter by category
+            else if (!"all".equalsIgnoreCase(category)) {
+                services = serviceService.getActiveServices(category);
+                System.out.println("📂 Category filter: " + category + " | Found: " + services.size());
+            } 
+            // ✅ FIX: Otherwise, get all active services
+            else {
+                services = serviceService.getActiveServices("all");
+                System.out.println("🌟 Fetching all active services | Found: " + services.size());
             }
 
-            List<ServiceEntity> services = serviceService.getActiveServices(category);
-            System.out.println("Found " + services.size() + " services for category");
             return ResponseEntity.ok(services);
+
         } catch (Exception e) {
-            System.err.println("Error in getAllServices: " + e.getMessage());
+            System.err.println("❌ Error in getAllServices: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }

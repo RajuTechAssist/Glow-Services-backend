@@ -52,12 +52,14 @@ public class ServiceService {
     public List<ServiceEntity> searchServices(String searchTerm, String category, String sortBy) {
         List<ServiceEntity> services;
 
-        if ("all".equals(category)) {
+        // 1. Fetch results based on search & category
+        if (category == null || "all".equalsIgnoreCase(category)) {
             services = serviceRepository.findBySearchTerm(searchTerm);
         } else {
             services = serviceRepository.findByCategoryAndSearchTerm(category, searchTerm);
         }
 
+        // 2. Apply Sorting (Since repository methods might not sort dynamically)
         return sortServices(services, sortBy);
     }
 

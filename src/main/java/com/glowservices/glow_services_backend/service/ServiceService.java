@@ -58,16 +58,18 @@ public class ServiceService {
 
     public List<ServiceEntity> searchServices(String searchTerm, String category, String sortBy) {
         List<ServiceEntity> services;
-        
-        // ✅ Wrap search term with wildcards here
+
+        // ✅ FIX: Wrap search term in wildcards here for reliable partial matching
         String searchPattern = "%" + searchTerm + "%";
 
+        // 1. Fetch results based on search & category
         if (category == null || "all".equalsIgnoreCase(category)) {
             services = serviceRepository.findBySearchTerm(searchPattern);
         } else {
             services = serviceRepository.findByCategoryAndSearchTerm(category, searchPattern);
         }
 
+        // 2. Apply Sorting
         return sortServices(services, sortBy);
     }
 

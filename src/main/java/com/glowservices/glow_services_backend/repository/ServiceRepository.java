@@ -15,23 +15,21 @@ public interface ServiceRepository extends JpaRepository<ServiceEntity, Long> {
 
     Optional<ServiceEntity> findBySlug(String slug);
 
-    // Find by Category Slug (e.g., 'facial', 'waxing')
     List<ServiceEntity> findByCategory(String category);
     
-    // Find Active Services by Category
     List<ServiceEntity> findByCategoryAndActiveTrue(String category);
 
     List<ServiceEntity> findByPopularTrue();
 
     List<ServiceEntity> findByActiveTrue();
 
-    // ✅ FIX: Search Query with Case-Insensitive Partial Match
+    // ✅ FIXED: Simple LIKE query (Wildcards will be passed from Service)
     @Query("SELECT s FROM ServiceEntity s WHERE s.active = true AND " +
            "(LOWER(s.name) LIKE LOWER(:searchTerm) OR " +
            "LOWER(s.description) LIKE LOWER(:searchTerm))")
     List<ServiceEntity> findBySearchTerm(@Param("searchTerm") String searchTerm);
 
-    // ✅ FIX: Category + Search Query
+    // ✅ FIXED: Simple LIKE query for Category + Search
     @Query("SELECT s FROM ServiceEntity s WHERE s.active = true AND s.category = :category AND " +
            "(LOWER(s.name) LIKE LOWER(:searchTerm) OR " +
            "LOWER(s.description) LIKE LOWER(:searchTerm))")

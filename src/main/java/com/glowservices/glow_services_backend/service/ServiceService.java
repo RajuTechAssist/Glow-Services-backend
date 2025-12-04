@@ -64,6 +64,8 @@ public class ServiceService {
     }
 
     private List<ServiceEntity> sortServices(List<ServiceEntity> services, String sortBy) {
+        if (sortBy == null) return services;
+
         switch (sortBy) {
             case "price-low":
                 return services.stream()
@@ -75,12 +77,22 @@ public class ServiceService {
                         .toList();
             case "rating":
                 return services.stream()
-                        .sorted((s1, s2) -> Double.compare(s2.getRating(), s1.getRating()))
+                        .sorted((s1, s2) -> Double.compare(
+                            s2.getRating() != null ? s2.getRating() : 0.0, 
+                            s1.getRating() != null ? s1.getRating() : 0.0
+                        ))
+                        .toList();
+            case "newest":
+                 return services.stream()
+                        .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))
                         .toList();
             case "popular":
             default:
                 return services.stream()
-                        .sorted((s1, s2) -> Boolean.compare(s2.getPopular(), s1.getPopular()))
+                        .sorted((s1, s2) -> Boolean.compare(
+                            s2.getPopular() != null ? s2.getPopular() : false, 
+                            s1.getPopular() != null ? s1.getPopular() : false
+                        ))
                         .toList();
         }
     }

@@ -17,27 +17,28 @@ public class ServiceController {
     @Autowired
     private ServiceService serviceService;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<ServiceEntity>> getAllServices(
             @RequestParam(required = false, defaultValue = "all") String category,
             @RequestParam(required = false) String search,
             @RequestParam(required = false, defaultValue = "popular") String sortBy) {
 
         try {
-            System.out.println("API called: category=" + category + ", search=" + search + ", sortBy=" + sortBy);
+            List<ServiceEntity> services;
 
-            if (search != null && !search.isEmpty()) {
-                // ✅ USES a simpler, more direct service call now
-                List<ServiceEntity> services = serviceService.getActiveServices(category);
-                System.out.println("Found " + services.size() + " services for search");
-                return ResponseEntity.ok(services);
+            // 1. If Searching
+            if (search != null && !search.trim().isEmpty()) {
+                services = serviceService.searchServices(search.trim(), category, sortBy);
+            } 
+            // 2. If Filtering or Default View
+            else {
+                // ✅ Now passing sortBy to this method too
+                services = serviceService.getActiveServices(category, sortBy);
             }
 
-            List<ServiceEntity> services = serviceService.getActiveServices(category);
-            System.out.println("Found " + services.size() + " services for category");
             return ResponseEntity.ok(services);
+
         } catch (Exception e) {
-            System.err.println("Error in getAllServices: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }

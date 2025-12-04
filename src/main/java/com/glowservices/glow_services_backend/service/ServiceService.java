@@ -52,20 +52,16 @@ public class ServiceService {
     public List<ServiceEntity> searchServices(String searchTerm, String category, String sortBy) {
         List<ServiceEntity> services;
 
-        // 1. Fetch results based on search & category
-        if (category == null || "all".equalsIgnoreCase(category)) {
+        if ("all".equals(category)) {
             services = serviceRepository.findBySearchTerm(searchTerm);
         } else {
             services = serviceRepository.findByCategoryAndSearchTerm(category, searchTerm);
         }
 
-        // 2. Apply Sorting (Since repository methods might not sort dynamically)
         return sortServices(services, sortBy);
     }
 
     private List<ServiceEntity> sortServices(List<ServiceEntity> services, String sortBy) {
-        if (sortBy == null) return services;
-
         switch (sortBy) {
             case "price-low":
                 return services.stream()
@@ -77,22 +73,12 @@ public class ServiceService {
                         .toList();
             case "rating":
                 return services.stream()
-                        .sorted((s1, s2) -> Double.compare(
-                            s2.getRating() != null ? s2.getRating() : 0.0, 
-                            s1.getRating() != null ? s1.getRating() : 0.0
-                        ))
-                        .toList();
-            case "newest":
-                 return services.stream()
-                        .sorted((s1, s2) -> s2.getCreatedAt().compareTo(s1.getCreatedAt()))
+                        .sorted((s1, s2) -> Double.compare(s2.getRating(), s1.getRating()))
                         .toList();
             case "popular":
             default:
                 return services.stream()
-                        .sorted((s1, s2) -> Boolean.compare(
-                            s2.getPopular() != null ? s2.getPopular() : false, 
-                            s1.getPopular() != null ? s1.getPopular() : false
-                        ))
+                        .sorted((s1, s2) -> Boolean.compare(s2.getPopular(), s1.getPopular()))
                         .toList();
         }
     }
@@ -237,13 +223,15 @@ public class ServiceService {
                 });
     }
 
-    // ✅ NEW: Actually deletes the record from the database
     public boolean deleteService(Long id) {
-        if (serviceRepository.existsById(id)) {
-            serviceRepository.deleteById(id);
-            return true;
-        }
-        return false;
+        return serviceRepository.findById(id)
+                .map(service -> {
+                    service.setActive(false); // Soft delete
+                    service.setUpdatedAt(LocalDateTime.now());
+                    serviceRepository.save(service);
+                    return true;
+                })
+                .orElse(false);
     }
 
     public boolean deleteServiceBySlug(String slug) {

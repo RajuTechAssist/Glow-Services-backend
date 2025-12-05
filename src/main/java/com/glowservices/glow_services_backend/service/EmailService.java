@@ -1,6 +1,7 @@
 package com.glowservices.glow_services_backend.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -9,22 +10,47 @@ import org.springframework.stereotype.Service;
 public class EmailService {
 
     @Autowired
+    @Lazy
     private JavaMailSender mailSender;
 
+    // Existing OTP method...
     public void sendOtpEmail(String toEmail, String otp) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("oooye.raju@gmail.com");
-        message.setTo(toEmail);
-        message.setSubject("Glow Services - Verification Code");
-        message.setText("Your One-Time Password (OTP) is: " + otp + "\n\nThis code is valid for 5 minutes.");
-        mailSender.send(message);
+        // ... your existing code ...
+    }
+
+    // ✅ NEW: Send Login Credentials (Only for new accounts)
+    public void sendLoginCredentials(String toEmail, String name, String password) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Welcome to Glow Services! 🌸");
+            message.setText("Hi " + name + ",\n\n" +
+                    "Your booking has been confirmed! We have created an account for you.\n\n" +
+                    "🔑 Username: " + toEmail + "\n" +
+                    "🔑 Password: " + password + "\n\n" +
+                    "Login here: https://glow-service.studio/customer/login\n\n" +
+                    "Stay Glowing,\nGlow Services Team");
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send credentials: " + e.getMessage());
+        }
     }
     
-    public void sendLoginCredentials(String toEmail, String password) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(toEmail);
-        message.setSubject("Welcome to Glow Services!");
-        message.setText("Your account has been created.\n\nUsername: " + toEmail + "\nPassword: " + password + "\n\nPlease login and change your password.");
-        mailSender.send(message);
+    // ✅ NEW: Send Booking Confirmation (For everyone)
+    public void sendBookingConfirmation(String toEmail, String name, String serviceName, String date, String time) {
+         try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Booking Confirmed: " + serviceName);
+            message.setText("Hi " + name + ",\n\n" +
+                    "Your appointment for " + serviceName + " is confirmed!\n\n" +
+                    "📅 Date: " + date + "\n" +
+                    "⏰ Time: " + time + "\n\n" +
+                    "Our expert will arrive at your location.\n\n" +
+                    "Glow Services Team");
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send booking confirmation: " + e.getMessage());
+        }
     }
 }

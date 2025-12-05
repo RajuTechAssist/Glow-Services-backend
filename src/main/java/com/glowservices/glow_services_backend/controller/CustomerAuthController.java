@@ -17,6 +17,7 @@ import com.glowservices.glow_services_backend.model.entity.Customer;
 import com.glowservices.glow_services_backend.repository.CustomerRepository;
 import com.glowservices.glow_services_backend.service.EmailService;
 import com.glowservices.glow_services_backend.service.OtpService;
+import com.glowservices.glow_services_backend.service.SmsService;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -26,6 +27,7 @@ public class CustomerAuthController {
     @Autowired private CustomerRepository customerRepo;
     @Autowired private OtpService otpService;
     @Autowired private EmailService emailService;
+    @Autowired private SmsService smsService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Customer customer) {
@@ -60,26 +62,36 @@ public class CustomerAuthController {
     }
 
 
+    // 1. Endpoint to SEND OTP
     @PostMapping("/send-otp")
     public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> request) {
         String type = request.get("type"); // "email" or "phone"
-        String identifier = request.get("identifier"); // email or phone number
+        String identifier = request.get("identifier"); // actual email or phone number
 
-        if (identifier == null) return ResponseEntity.badRequest().body("Identifier required");
+        if (identifier == null || identifier.trim().isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Identifier is required"));
+        }
 
         String otp = otpService.generateOtp(identifier);
 
+        boolean sent = false;
         if ("email".equalsIgnoreCase(type)) {
             emailService.sendOtpEmail(identifier, otp);
+            sent = true;
         } else if ("phone".equalsIgnoreCase(type)) {
-            // SMS sending removed: implement alternative channel if needed
+            sent = smsService.sendOtpSms(identifier, otp);
         } else {
-            return ResponseEntity.badRequest().body("Invalid type");
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid type. Use 'email' or 'phone'"));
         }
 
-        return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
+        if (sent) {
+            return ResponseEntity.ok(Map.of("message", "OTP sent successfully", "status", "success"));
+        } else {
+            return ResponseEntity.status(500).body(Map.of("message", "Failed to send OTP"));
+        }
     }
 
+    // 2. Endpoint to VERIFY OTP
     @PostMapping("/verify-otp")
     public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
         String identifier = request.get("identifier");

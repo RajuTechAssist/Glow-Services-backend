@@ -13,7 +13,7 @@ public class EmailService {
 
     public void sendOtpEmail(String toEmail, String otp) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@glowservices.com");
+        message.setFrom("oooye.raju@gmail.com");
         message.setTo(toEmail);
         message.setSubject("Glow Services - Verification Code");
         message.setText("Your One-Time Password (OTP) is: " + otp + "\n\nThis code is valid for 5 minutes.");

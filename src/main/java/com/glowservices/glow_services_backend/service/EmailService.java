@@ -13,11 +13,17 @@ public class EmailService {
     @Lazy
     private JavaMailSender mailSender;
 
-    // Existing OTP method...
     public void sendOtpEmail(String toEmail, String otp) {
-        // ... your existing code ...
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(toEmail);
+            message.setSubject("Glow Services - Your Verification Code");
+            message.setText("Hello,\n\nYour One-Time Password (OTP) is: " + otp + "\n\nThis code expires in 5 minutes.");
+            mailSender.send(message);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send OTP email: " + e.getMessage());
+        }
     }
-
     // ✅ NEW: Send Login Credentials (Only for new accounts)
     public void sendLoginCredentials(String toEmail, String name, String password) {
         try {

@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.glowservices.glow_services_backend.model.entity.Customer;
 import com.glowservices.glow_services_backend.repository.CustomerRepository;
+import com.glowservices.glow_services_backend.service.EmailService;
+import com.glowservices.glow_services_backend.service.OtpService;
 
 @RestController
 @RequestMapping("/api/customers")
@@ -22,6 +24,8 @@ import com.glowservices.glow_services_backend.repository.CustomerRepository;
 public class CustomerAuthController {
 
     @Autowired private CustomerRepository customerRepo;
+    @Autowired private OtpService otpService;
+    @Autowired private EmailService emailService;
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Customer customer) {
@@ -53,5 +57,40 @@ public class CustomerAuthController {
             return ResponseEntity.ok(resp);
         }
         return ResponseEntity.status(401).body(Map.of("message","Invalid credentials"));
+    }
+
+
+    @PostMapping("/send-otp")
+    public ResponseEntity<?> sendOtp(@RequestBody Map<String, String> request) {
+        String type = request.get("type"); // "email" or "phone"
+        String identifier = request.get("identifier"); // email or phone number
+
+        if (identifier == null) return ResponseEntity.badRequest().body("Identifier required");
+
+        String otp = otpService.generateOtp(identifier);
+
+        if ("email".equalsIgnoreCase(type)) {
+            emailService.sendOtpEmail(identifier, otp);
+        } else if ("phone".equalsIgnoreCase(type)) {
+            // SMS sending removed: implement alternative channel if needed
+        } else {
+            return ResponseEntity.badRequest().body("Invalid type");
+        }
+
+        return ResponseEntity.ok(Map.of("message", "OTP sent successfully"));
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> verifyOtp(@RequestBody Map<String, String> request) {
+        String identifier = request.get("identifier");
+        String otp = request.get("otp");
+
+        boolean isValid = otpService.validateOtp(identifier, otp);
+
+        if (isValid) {
+            return ResponseEntity.ok(Map.of("status", "verified", "message", "OTP Verified"));
+        } else {
+            return ResponseEntity.status(400).body(Map.of("status", "failed", "message", "Invalid or Expired OTP"));
+        }
     }
 }

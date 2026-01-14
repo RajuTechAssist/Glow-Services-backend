@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -54,6 +55,10 @@ public class BookingService {
         emailService.sendBookingConfirmation(customer.getEmail(), customer.getFullName(), service.getName(), request.getSelectedDate(), request.getSelectedTime());
 
         return savedBooking;
+    }
+    public List<Booking> getAllBookings() {
+        // Fetches all bookings sorted by latest first (optional sorting)
+        return bookingRepository.findAll(org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
     }
 
     private Customer getOrCreateCustomer(BookingRequest request) {

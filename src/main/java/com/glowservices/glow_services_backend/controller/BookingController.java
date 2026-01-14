@@ -41,4 +41,18 @@ public class BookingController {
             return ResponseEntity.internalServerError().build();
         }
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<?> updateBookingStatus(@PathVariable Long id, @RequestParam String status) {
+        try {
+            Booking updatedBooking = bookingService.updateBookingStatus(id, status);
+            return ResponseEntity.ok(Map.of(
+                "message", "Booking status updated successfully!",
+                "bookingId", updatedBooking.getId(),
+                "newStatus", updatedBooking.getStatus()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

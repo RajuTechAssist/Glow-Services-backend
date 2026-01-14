@@ -59,4 +59,38 @@ public class EmailService {
             System.err.println("❌ Failed to send booking confirmation: " + e.getMessage());
         }
     }
+
+
+    public void sendBookingStatusUpdate(String to, String customerName, String serviceName, String status, String date, String time) {
+        try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(to);
+            message.setSubject("Booking Update: " + status + " - Glow Services");
+            
+            String statusMessage = "";
+            if ("CONFIRMED".equalsIgnoreCase(status)) {
+                statusMessage = "We are pleased to confirm your appointment! Our specialist will be ready for you.";
+            } else if ("CANCELLED".equalsIgnoreCase(status)) {
+                statusMessage = "Your booking has been cancelled. If this was a mistake, please contact us.";
+            } else if ("COMPLETED".equalsIgnoreCase(status)) {
+                statusMessage = "Thank you for visiting us! We hope you enjoyed your service.";
+            } else {
+                statusMessage = "The status of your booking has been updated to: " + status;
+            }
+
+            String body = "Dear " + customerName + ",\n\n" +
+                    statusMessage + "\n\n" +
+                    "Service: " + serviceName + "\n" +
+                    "Date: " + date + "\n" +
+                    "Time: " + time + "\n\n" +
+                    "Thank you for choosing Glow Services.\n" +
+                    "Best regards,\nThe Glow Services Team";
+
+            message.setText(body);
+            mailSender.send(message);
+            System.out.println("✅ Status update email sent to " + to);
+        } catch (Exception e) {
+            System.err.println("❌ Failed to send status update email: " + e.getMessage());
+        }
+    }
 }

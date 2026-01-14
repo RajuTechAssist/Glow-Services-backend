@@ -91,4 +91,35 @@ public class BookingService {
 
         return saved;
     }
+
+    public Booking updateBookingStatus(Long bookingId, String status) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new RuntimeException("Booking not found"));
+
+        try {
+            BookingStatus newStatus = BookingStatus.valueOf(status.toUpperCase());
+            booking.setStatus(newStatus);
+            
+            Booking savedBooking = bookingRepository.save(booking);
+
+            // 👇 ADD THIS BLOCK: Send Email Notification
+            try {
+                emailService.sendBookingStatusUpdate(
+                    savedBooking.getCustomer().getEmail(),
+                    savedBooking.getCustomer().getFullName(),
+                    savedBooking.getService().getName(),
+                    savedBooking.getStatus().toString(),
+                    savedBooking.getBookingDate(),
+                    savedBooking.getBookingTime()
+                );
+            } catch (Exception e) {
+                // Don't rollback transaction just because email failed
+                System.err.println("Warning: Could not send status email: " + e.getMessage());
+            }
+
+            return savedBooking;
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid booking status: " + status);
+        }
+    }
 }

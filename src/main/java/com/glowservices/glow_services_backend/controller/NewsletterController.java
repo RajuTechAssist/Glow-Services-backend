@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/newsletter")
-@CrossOrigin
 @RequiredArgsConstructor
 public class NewsletterController {
 

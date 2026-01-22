@@ -11,7 +11,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/upload")
-// @CrossOrigin(origins = {"http://localhost:5173", "https://glow-service.studio", "https://www.glow-service.studio"}, allowCredentials = "true")
 public class FileUploadController {
 
     @Autowired

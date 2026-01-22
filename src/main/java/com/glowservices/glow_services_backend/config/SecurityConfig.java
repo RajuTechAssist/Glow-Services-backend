@@ -53,6 +53,10 @@ public class SecurityConfig {
                                                 // SECURE ADMIN ENDPOINTS with role check
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
+                                                // Bookings: Public to create, Admin to view/manage
+                                                .requestMatchers(HttpMethod.POST, "/api/bookings").permitAll()
+                                                .requestMatchers("/api/bookings/**").hasRole("ADMIN")
+
                                                 .requestMatchers("/api/services/**").permitAll()
                                                 .requestMatchers("/api/products/**").permitAll()
                                                 .requestMatchers("/api/categories/**").permitAll()

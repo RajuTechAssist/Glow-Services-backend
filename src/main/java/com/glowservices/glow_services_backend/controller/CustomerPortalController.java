@@ -110,13 +110,16 @@ public class CustomerPortalController {
                 .map(Map.Entry::getKey)
                 .toList();
 
+        int points = Optional.ofNullable(customer.getLoyaltyPoints()).orElse(0);
         Map<String, Object> body = Map.of(
-                "loyaltyPoints", Optional.ofNullable(customer.getLoyaltyPoints()).orElse(0),
+                "loyaltyPoints", points,
+                "tier", calculateTier(points),
                 "totalSpent", totalSpent,
                 "servicesCompleted", servicesCompleted,
                 "favoriteServices", favoriteServices,
                 "upcomingBookings", upcoming,
-                "recentOrders", recentOrders
+                "recentOrders", recentOrders,
+                "memberSince", customer.getCreatedAt()
         );
 
         return ResponseEntity.ok(body);

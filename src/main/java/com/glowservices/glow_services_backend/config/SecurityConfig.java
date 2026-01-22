@@ -15,6 +15,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.glowservices.glow_services_backend.security.CustomUserDetailsService;
 import com.glowservices.glow_services_backend.security.JwtAuthenticationFilter;
 import com.glowservices.glow_services_backend.security.JwtTokenProvider;
 
@@ -28,7 +29,10 @@ public class SecurityConfig {
         private JwtTokenProvider tokenProvider;
 
         @Autowired
-    private CorsConfigurationSource corsConfigurationSource; // Inject the Bean from CorsConfig
+        private CustomUserDetailsService userDetailsService;
+
+        @Autowired
+        private CorsConfigurationSource corsConfigurationSource; // Inject the Bean from CorsConfig
 
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -45,7 +49,9 @@ public class SecurityConfig {
                                                 // Public Endpoints
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
                                                 // .requestMatchers("/api/admin/ai/**").permitAll() // Secure this
-                                                .requestMatchers("/api/admin/**").authenticated()
+                                                
+                                                // SECURE ADMIN ENDPOINTS with role check
+                                                .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
                                                 .requestMatchers("/api/services/**").permitAll()
                                                 .requestMatchers("/api/products/**").permitAll()
@@ -70,7 +76,7 @@ public class SecurityConfig {
                                                 // Allow all other requests for now (we'll secure them later)
                                                 .anyRequest().permitAll())
                                 // ✅ Add the JWT filter before the standard username/password filter
-                                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider),
+                                .addFilterBefore(new JwtAuthenticationFilter(tokenProvider, userDetailsService),
                                                 UsernamePasswordAuthenticationFilter.class);
 
                 // .formLogin(form -> form

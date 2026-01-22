@@ -59,6 +59,23 @@ public class GlowServicesBackendApplication {
 
         SpringApplication.run(GlowServicesBackendApplication.class, args);
     }
+    
+    @org.springframework.context.annotation.Bean
+    public org.springframework.boot.CommandLineRunner run(AdminRepository adminRepository, PasswordEncoder passwordEncoder) {
+        return args -> {
+            String adminUsername = "raju_glow_admin";
+            if (adminRepository.findByUsername(adminUsername).isEmpty()) {
+                Admin admin = new Admin();
+                admin.setUsername(adminUsername);
+                admin.setPassword(passwordEncoder.encode("Raju_xyz_05052000@"));
+                admin.setRole(Admin.AdminRole.ADMIN); 
+                admin.setEmail("admin@glow.studio");
+                admin.setFullName("Raju Admin");
+                adminRepository.save(admin);
+                System.out.println("✅ Permanent Admin Created: " + adminUsername);
+            }
+        };
+    }
 
     private static void setIfMissing(String key, String value) {
         if (value == null || value.isBlank())

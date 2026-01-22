@@ -50,6 +50,11 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
                                                 // .requestMatchers("/api/admin/ai/**").permitAll() // Secure this
                                                 
+                                                // Public Admin Read-Only Endpoints (Must be before /api/admin/**)
+                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/published").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/{id}").permitAll()
+                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/featured").permitAll()
+
                                                 // SECURE ADMIN ENDPOINTS with role check
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
@@ -62,17 +67,14 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/public/**").permitAll()
                                                  .requestMatchers("/api/health/**").permitAll()
                                                  .requestMatchers("/api/blogs/**").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/published")
-                                                .permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/{id}").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/featured")
-                                                .permitAll()
 
                                                 .requestMatchers("/api/public/**").permitAll()
                                                 // Allow actuator health check
                                                 .requestMatchers("/actuator/health/**").permitAll()
                                                 // Require authentication for admin endpoints
                                                 .requestMatchers("/api/auth/**").permitAll()
+                                                // Swagger UI
+                                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                                                 // Allow all other requests for now (we'll secure them later)
                                                 .anyRequest().permitAll())
                                 // ✅ Add the JWT filter before the standard username/password filter

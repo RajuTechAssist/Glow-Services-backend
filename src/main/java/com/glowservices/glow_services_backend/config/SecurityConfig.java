@@ -50,11 +50,6 @@ public class SecurityConfig {
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
                                                 // .requestMatchers("/api/admin/ai/**").permitAll() // Secure this
                                                 
-                                                // Public Admin Read-Only Endpoints (Must be before /api/admin/**)
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/published").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/{id}").permitAll()
-                                                .requestMatchers(HttpMethod.GET, "/api/admin/blogs/featured").permitAll()
-
                                                 // SECURE ADMIN ENDPOINTS with role check
                                                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
 

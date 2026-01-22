@@ -57,7 +57,7 @@ public class Product {
     @Column(name = "discount_percentage")
     private Double discountPercentage;
 
-    @Column(nullable = false)
+    @Column(name = "stockquantity", nullable = false)
     private Integer stockQuantity = 0;
 
     @Column(name = "low_stock_threshold")

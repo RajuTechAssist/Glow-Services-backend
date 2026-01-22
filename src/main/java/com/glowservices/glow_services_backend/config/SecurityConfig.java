@@ -44,7 +44,7 @@ public class SecurityConfig {
                                                 
                                                 // Public Endpoints
                                                 .requestMatchers("/api/admin/login", "/api/admin/logout").permitAll()
-                                                .requestMatchers("/api/admin/ai/**").permitAll()
+                                                // .requestMatchers("/api/admin/ai/**").permitAll() // Secure this
                                                 .requestMatchers("/api/admin/**").authenticated()
 
                                                 .requestMatchers("/api/services/**").permitAll()

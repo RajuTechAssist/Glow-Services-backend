@@ -1,3 +1,4 @@
+// How to Run locally in the Future: cd glow-services-backend; .\mvnw spring-boot:run "-Dspring-boot.run.profiles=local" "-Daws.accessKeyId=dummy" "-Daws.secretKey=dummy"
 package com.glowservices.glow_services_backend;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,22 @@ public class GlowServicesBackendApplication {
                     .load();
 
             // set System properties only if not already present as env vars or system props
-            setIfMissing("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
-            setIfMissing("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
-            setIfMissing("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+            dotenv.entries().forEach(entry -> {
+                setIfMissing(entry.getKey(), entry.getValue());
+            });
+            
+            // Map standard AWS env vars to Java System Properties expected by AWS SDK
+            // The SDK looks for "aws.accessKeyId" and "aws.secretKey" (or "aws.secretAccessKey")
+            if (dotenv.get("AWS_ACCESS_KEY_ID") != null) {
+                setIfMissing("aws.accessKeyId", dotenv.get("AWS_ACCESS_KEY_ID"));
+            }
+            if (dotenv.get("AWS_SECRET_ACCESS_KEY") != null) {
+                setIfMissing("aws.secretAccessKey", dotenv.get("AWS_SECRET_ACCESS_KEY"));
+                setIfMissing("aws.secretKey", dotenv.get("AWS_SECRET_ACCESS_KEY")); // Legacy support
+            }
+            if (dotenv.get("AWS_REGION") != null) {
+                setIfMissing("aws.region", dotenv.get("AWS_REGION"));
+            }
 
             setIfMissing("spring.datasource.driver-class-name", dotenv.get("SPRING_DATASOURCE_DRIVER"));
             // add any other keys you used from .env similarly

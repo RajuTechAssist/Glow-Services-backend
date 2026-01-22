@@ -33,7 +33,7 @@ public class Admin {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "fullname", nullable = false)
     private String fullName;
 
     @Enumerated(EnumType.STRING)
